@@ -19,7 +19,7 @@ if (!($ = window.jQuery)) {
 
   for (var i = 0; i < script_srcs.length; i++) {
 
-    var xhrObj = createXMLHTTPObject();
+    var xhrObj = new XMLHttpRequest(); 
     // open and send a synchronous request
     xhrObj.open('GET', script_srcs[i], false);
     xhrObj.send('');
