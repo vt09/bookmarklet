@@ -49,7 +49,7 @@ function sendRequest() {
         url: feedback_link + '/classify',
         jsonp: 'callback',
         dataType: 'jsonp',
-        data: {'url': 'http://newsoffice.mit.edu/2014/recycling-batteries-into-solar-cells-0818'},
+        data: {'url': url},
         success: function(data) {
           // Rmove waiting gif image
           $("body").removeClass("loading");
