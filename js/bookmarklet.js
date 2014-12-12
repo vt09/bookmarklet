@@ -18,9 +18,16 @@ if (!($ = window.jQuery)) {
   }
 
   for (var i = 0; i < script_srcs.length; i++) {
+
+    var xhrObj = createXMLHTTPObject();
+    // open and send a synchronous request
+    xhrObj.open('GET', script_srcs[i], false);
+    xhrObj.send('');
+
     var script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = script_srcs[i];
+    script.text = xhrObj.responseText;
+
     if (script_srcs[i] === 'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js') {
       script.onload = sendRequest;
     }
