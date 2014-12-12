@@ -1,6 +1,6 @@
 var feedback_link = "http://127.0.0.1:19006";
 
-if (!($ = window.jQuery)) {
+if (!($ = window.bootbox)) {
   var script_srcs = [
     'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
     'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js',
@@ -31,7 +31,7 @@ if (!($ = window.jQuery)) {
     if (script_srcs[i] === 'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js') {
       script.onload = sendRequest;
     }
-    document.head.appendChild(script);
+    document.getElementsByTagName('head')[0].appendChild(script);
   }
 }
 else {
@@ -40,34 +40,36 @@ else {
 
 function sendRequest() {
   var url = location.href;
-  $(document).ready(function() {
-    // Add waiting gif image
-    $("body").append("<div class='modaling'></div>");
-    $("body").addClass("loading");
-    
-    $.ajax({
-        url: feedback_link + '/classify',
-        jsonp: 'callback',
-        dataType: 'jsonp',
-        data: {'url': url},
-        success: function(data) {
-          // Rmove waiting gif image
-          $("body").removeClass("loading");
-          $('.modaling').fadeOut(500);
+  jQuery(function ($) {
+    $(document).ready(function() {
+        // Add waiting gif image
+        $("body").append("<div class='modaling'></div>");
+        $("body").addClass("loading");
 
-          if (data) {
-              var category = data[0][0];
-              if (category) {
-                  getCategory(category);
+        $.ajax({
+            url: feedback_link + '/classify',
+            jsonp: 'callback',
+            dataType: 'jsonp',
+            data: {'url': url},
+            success: function(data) {
+              // Rmove waiting gif image
+              $("body").removeClass("loading");
+              $('.modaling').fadeOut(500);
+
+              if (data) {
+                  var category = data[0][0];
+                  if (category) {
+                      getCategory(category);
+                  }
               }
-          }
-        }, 
-        error: function(e) {
-          alert(e);
-        }
+            },
+            error: function(e) {
+              alert(e);
+            }
+        })
+        })
     })
-  })
-}
+  }
 function getCategory(category) {
     function counter($el, n) {
       (function loop() {
@@ -167,31 +169,38 @@ function getCategory(category) {
                         label: "Send feedback",
                         className: "btn-success",
                         callback: function () {
-                            var name = $('#name').val();
-                            var answer = $("input[name='awesomeness']:checked").val();
-                            var url = location.href;
-                            $.ajax({
-                              type: "GET",
-                              // url: 'http://54.255.101.212:19006/classifier/get_feedback',
-                              url: feedback_link + '/classifier/get_feedback',
-                              dataType: 'jsonp',
-                              jsonp: 'callback',
-                              data: {'url': url, 'category_feedback': answer, 'category': category},                              
-                              success: function(data) {
-                                bootbox.hideAll();
-                              }, 
-                              error: function(e) {
-                                alert("error" + JSON.stringify(e));
-                                bootbox.hideAll();
-                              }
-                          })
+                            (function($) {
+                                var name = $('#name').val();
+                                var answer = $("input[name='awesomeness']:checked").val();
+                                var url = location.href;
+
+                                 $.ajax({
+                                      type: "GET",
+                                      // url: 'http://54.255.101.212:19006/classifier/get_feedback',
+                                      url: feedback_link + '/classifier/get_feedback',
+                                      dataType: 'jsonp',
+                                      jsonp: 'callback',
+                                      data: {'url': url, 'category_feedback': answer, 'category': category},
+                                      success: function(data) {
+                                        bootbox.hideAll();
+                                      },
+                                      error: function(e) {
+                                        alert("error" + JSON.stringify(e));
+                                        bootbox.hideAll();
+                                      }
+                                 })
+                          })(jQuery);
                         }
                     }
                 }
             }
     );
-    counter($('#countdown'), 12);
-    window.setTimeout(function() {
-      bootbox.hideAll();
-    }, 12000);  
+
+    jQuery(function($) {
+        counter($('#countdown'), 12);
+        window.setTimeout(function() {
+          bootbox.hideAll();
+        }, 12000);
+    })
+
 }
